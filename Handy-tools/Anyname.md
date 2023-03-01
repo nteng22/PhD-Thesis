@@ -1,6 +1,7 @@
 # Anyname.sh 
 a script to remove part of a file name for all files in a directory <br>
-e.g. removing PID_XXX from all fasta files
+e.g. removing PID_XXX from all fasta files <br>
+From @raymondkiu (thanks)
 
 all the lines will essentially be:
 ```
