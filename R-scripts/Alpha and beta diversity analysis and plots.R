@@ -44,11 +44,11 @@ metadata <- normalised_data %>%
 # Only select the OTU abundance columns
 #abundance_table <- data %>%
 #  filter(ID_Patient %in% full_course) %>%
-  select("Cloacibacillus":ncol(data))
+#  select("Cloacibacillus":ncol(data))
 
 #metadata <- normalised_data %>%
 #  filter(ID_Patient %in% full_course) %>%
-  select(ID_Patient:Time_point)
+#  select(ID_Patient:Time_point)
 
 metadata$PDL1 <- factor(metadata$PDL1)
 metadata$CBR <- factor(metadata$CBR)
@@ -167,13 +167,13 @@ adonis(abundance_table ~ Time_point + Site + Time_point*Site,
        method = "bray")
 
 # Look at significance of Site
-adonis(abundance_table ~ Site, 
+adonis2(abundance_table ~ Site, 
        data = metadata, permutations = 999,
        method = "bray")
 
 # Anova of all factors
 # not tested independently of each other, so do each variable on its own
-adonis(abundance_table ~ tPFS, 
+adonis2(abundance_table ~ tPFS, 
        data = metadata, permutations = 999,
        method = "bray")
 # PDL1, p = 0.232
@@ -197,6 +197,8 @@ nmds_calc = metaMDS(abundance_table, distance =  "bray", k = 2,
 
 # adding columns from data set to put it into context
 data.scores <- as.data.frame(scores(nmds_calc))
+data.scores = as.data.frame(scores(nmds_calc)$sites)
+
 plot.data <- cbind(metadata, data.scores)
 
 plot.data$Time_point <- factor(plot.data$Time_point, levels = c("Baseline", "Week_9", "EoT"))
