@@ -58,6 +58,9 @@ metadata$CBR <- factor(metadata$CBR)
 metadata$NLR <- factor(metadata$NLR)
 metadata$tPFS <- factor(metadata$tPFS)
 
+metadata$CBR <- gsub("1", "CB", metadata$CBR)
+metadata$CBR <- gsub("0", "no CB", metadata$CBR)
+
 abundance_table <- data %>%
   select(`5-7N15`: ncol(data))
 
@@ -86,9 +89,9 @@ ggplot(shannon_metadata, aes(x = CBR, y = shannon_diversity),
        fill = CBR, shape = CBR) +
   geom_boxplot(aes(fill = CBR, shape = CBR, colour = CBR), outlier.shape = NA) +
   #Visualise by time point
-  facet_grid(. ~ Timepoint,
-             drop = TRUE, # Free_x removes empty bars
-             scale = "free_x") +
+  #facet_grid(. ~ Timepoint,
+  #           drop = TRUE, # Free_x removes empty bars
+  #           scale = "free_x") +
   geom_point(position = "identity", aes(fill = CBR, shape = CBR, colour = CBR), # change the shape 
              size = 2,
              stroke = .5) +
@@ -98,7 +101,7 @@ ggplot(shannon_metadata, aes(x = CBR, y = shannon_diversity),
                               "goldenrod")) +
   scale_fill_manual(values=c("white", "white", "white")) + # inner colour can change
   #Set the axis labels and title
-  labs(title="CALADRIO saliva shannon genus CBR and Timepoint") +
+  labs(title="CALADRIO saliva shannon genus CB") +
   theme(#Set the title font size
     plot.title = element_text(size=8),
     #Set the legend title position
@@ -140,15 +143,15 @@ ggplot(shannon_metadata, aes(x = CBR, y = shannon_diversity),
 #annotate("text", x = 1.5, y = 16, label = "p = 1", size = 2.5) +
 #annotate("segment", x = 1, xend = 2, y = 15, yend=15, lwd = 0.5)
 
-ggsave("KELLY_saliva Simpson CBR genus EoT.png", width = 200, height = 200, units = c("mm"), dpi = 400)
+ggsave("KELLY_saliva Shannon CBR genus.png", width = 200, height = 200, units = c("mm"), dpi = 400)
 
-ggplot(simpson_metadata, aes(x = PDL1, y = simpson_diversity),
-       fill = PDL1, shape = PDL1) +
-  geom_boxplot(aes(fill = PDL1, shape = PDL1, colour = PDL1), outlier.shape = NA) +
-  facet_grid(. ~ CBR,
-             drop = TRUE, # Free_x removes empty bars
-             scale = "free_x") +
-  geom_point(position = "identity", aes(fill = PDL1, shape = PDL1, colour = PDL1), # change the shape 
+ggplot(simpson_metadata, aes(x = CBR, y = simpson_diversity),
+       fill = CBR, shape = CBR) +
+  geom_boxplot(aes(fill = CBR, shape = CBR, colour = CBR), outlier.shape = NA) +
+  #facet_grid(. ~ CBR,
+  #           drop = TRUE, # Free_x removes empty bars
+  #           scale = "free_x") +
+  geom_point(position = "identity", aes(fill = CBR, shape = CBR, colour = CBR), # change the shape 
              size = 2,
              stroke = .5) +
   scale_shape_manual(values=c(21, 21, 21)) +
@@ -157,7 +160,7 @@ ggplot(simpson_metadata, aes(x = PDL1, y = simpson_diversity),
                               "goldenrod")) +
   scale_fill_manual(values=c("white", "white", "white")) + # inner colour can change
   #Set the axis labels and title
-  labs(title="KELLY saliva Simpson genus EoT") +
+  labs(title="KELLY saliva Simpson genus CB") +
   theme(#Set the title font size
     plot.title = element_text(size=8),
     #Set the legend title position
@@ -199,7 +202,7 @@ ggplot(simpson_metadata, aes(x = PDL1, y = simpson_diversity),
 #annotate("text", x = 1.5, y = 16, label = "p = 1", size = 2.5) +
 #annotate("segment", x = 1, xend = 2, y = 15, yend=15, lwd = 0.5)
 
-ggsave("KELLY_saliva Simpson PDL1 genus EoT.png", width = 200, height = 200, units = c("mm"), dpi = 400)
+ggsave("KELLY_saliva Simpson genus CB.png", width = 200, height = 200, units = c("mm"), dpi = 400)
 
 ggplot(simpson_metadata, aes(x = NLR, y = simpson_diversity),
        fill = NLR, shape = NLR) +
