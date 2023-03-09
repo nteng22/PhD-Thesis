@@ -1,6 +1,3 @@
-#### Housekeeping ####
-setwd("~/Dropbox/QIB/KELLY Study/")
-
 #### Download libraries ####
 #install.packages("dplyr")
 library("dplyr")
@@ -15,6 +12,7 @@ genus <- read_tsv("combined_genus.tsv") # Data would have been given as a .tsv f
 samples <- read_csv("KELLY_samples.csv")
 
 # gsub is subs the 'pattern' with your 'sub'
+# Cleaning it up to stay consistent when merging
 samples$`ID Patient` <- gsub("-", "_", samples$`ID Patient`)
 samples$`Time point` <- gsub(" ", "_", samples$`Time point`)
 samples$`Time point` <- gsub("Eot", "EoT", samples$`Time point`)
@@ -64,12 +62,14 @@ genus_sample_merge_inner <- inner_join(samples, genus_transposed, by = "Stool_sa
 #  group_by(ID_Patient)
 
 # Save as final csv file (just in case)
-# write.csv(genus_sample_merge_inner, "genus_sample_merged.csv")
+write.csv(genus_sample_merge_inner, "genus_sample_merged.csv")
 
 # Function to make long data
 library("reshape2")
 
 # Melt, melts a variable into the data set- making it long data vs wide
+# id.vars is what you want to keep and not 'melt' 
+# variable.name is what you want to name the data you're 'melting'
 genus_sample_long <- melt(genus_sample_merge_inner, 
                               id.vars = c("ID_Patient",
                                           "Stool_sample",
@@ -79,7 +79,6 @@ genus_sample_long <- melt(genus_sample_merge_inner,
 
 #### Rarecurve plot ####
 genus <- read_tsv("combined_genus.tsv")
-normalised_data <- read_csv("genus_sample_merged.csv")
 
 genus_num <- genus %>% 
   select(name, ends_with("genus_num"))
@@ -111,6 +110,3 @@ rarecurve(data,
           ylab = "No. of genus",
           xlab = "No. of sequences"
 )
-
-#### Make stacked bar plot ####
-#### Make heat map ####
