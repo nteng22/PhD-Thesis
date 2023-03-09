@@ -215,6 +215,7 @@ plot.data$tPFS <- factor(plot.data$tPFS)
 ggplot(data = plot.data, aes(x = NMDS1, y = NMDS2)) + 
   geom_point(aes(colour = Time_point, shape = PDL1, fill = Time_point),
              size = 3) + 
+  stat_ellipse(aes(colour = PDL1)) +
   # scale_"" is used to design the plot
   scale_fill_manual(values = c("white", "white", "white")) + 
   scale_colour_manual(values = c("blue", "red", "darkgreen")) + 
