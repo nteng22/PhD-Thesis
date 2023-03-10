@@ -1,6 +1,12 @@
 # PhD-Thesis
 Scripts used during the PhD journey. It's a mix of R and bash. R script given by Matthew Dalby. Bash scripts given by Raymond Kiu. 
 
+## BEAM Study 
+All the scripts used in analysing BEAM data
+
+## CALADRIO
+All scripts used in analysing oral and gut CALADRIO data
+
 ## [16S rRNA gene amplicon QC.R](https://github.com/nteng22/PhD-Thesis/blob/main/R-scripts/16S%20rRNA%20gene%20amplicon%20QC.R)
 Scripts given by Matthew Dalby. Format the biom data file to be used in R. <br>
 QC reads includes rarefying using DESeq2 to create a .csv file with normalised reads
