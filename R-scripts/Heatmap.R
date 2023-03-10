@@ -40,11 +40,11 @@ rowsums
 # Use the data to calculate the clustering for the heatmap
 # Calculate the Bray-Curtis dissimilarity matrix on the sample rows
 # You can change the method e.g. Jacard, see manual for more information
-data_dist_rows <- vegdist(top_other, method = "bray")
+data_dist_rows <- vegdist(data, method = "bray")
 # Cluster the rows by hierarchical clustering
 row_clustering <- hclust(data_dist_rows, "average")
 # Calculate the Bray-Curtis dissimilarity matrix on the genus columns
-data_dist_columns <- vegdist(t(top_other), method = "bray")
+data_dist_columns <- vegdist(t(data), method = "bray")
 #data_dist_columns <- vegdist(t(top), method = "bray") # this calculates the 'distance' based on the "top"
   # N abundances, but you need to have done the stacked bar plot previously so it's saved.
 # Cluster the columns by hierarchical clustering
