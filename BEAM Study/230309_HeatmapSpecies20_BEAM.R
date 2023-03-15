@@ -27,6 +27,9 @@ data <- normalised_data %>%
   select(`Synechococcus sp. Minos11`:ncol(normalised_data))
 metadata <- dplyr::select(normalised_data,
                           Sample)
+NNUH <- metadata[17:34,1] # Subset, only select the NNUH samples
+NNUH$Sample <- paste('NNUH00', NNUH$Sample, sep = "")
+metadata[17:34,1] <- NNUH # Replace old names with new names
 
 # Just check all the rows sum to 100.
 rowsums <- rowSums(data)
@@ -84,6 +87,8 @@ colour_palette <- colorRampPalette(colors=c("white",
                                             "red",
                                             "darkred",
                                             "black"))(100)
+top_other <- cbind(metadata, top_other)
+top_other <- column_to_rownames(top_other, var = "Sample")
 
 # Create the heatmap
 heatmap <- Heatmap(as.matrix(top_other), # The dataframe containing the heatmap data
@@ -107,13 +112,12 @@ heatmap <- Heatmap(as.matrix(top_other), # The dataframe containing the heatmap 
                                                labels_gp = gpar(fontsize = 8))) # Set legend label font size
 
 # Combine the heatmap and the annotation together in the order in which they are to appear
-p <- heatmap # + sidebar_annotation1 + sidebar_annotation2
+p <- heatmap 
 p
 
 # Set the saved pdf file name and define the size of the plot
 # This isn't ggplot so you need to save using pdf. The width and height are in inches because of Americans.
-#pdf(file = "~/Dropbox/QIB/Heatmap of BEAM samples.pdf", width = 8, height = 8)
-#pdf(file = "230228_Heatmap of BEAM samples ALL.pdf", width = 8, height = 8)
+pdf(file = "230315 Heatmap of BEAM samples, top 20 species.pdf", width = 8, height = 8)
 # print(p) saves the figure into a file
-#print(p)
-#dev.off()
+print(p)
+dev.off()
