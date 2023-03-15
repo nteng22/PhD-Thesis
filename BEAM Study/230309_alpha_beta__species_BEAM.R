@@ -21,7 +21,15 @@ metadata <- separate(metadata, Sample,
                      into = c("PatientID", "time_point"))
 metadata$time_point <- gsub("A", "baseline", metadata$time_point)
 metadata$time_point <- gsub("B", "post-surgery", metadata$time_point)
+metadata$time_point <- gsub("C", "6-months", metadata$time_point)
+metadata$time_point <- gsub("D", "one-year", metadata$time_point)
 
+# Change the NNUH sample names
+NNUH <- metadata[17:34,1] # Subset, only select the NNUH samples
+NNUH$PatientID <- paste('NNUH00', NNUH$PatientID, sep = "")
+metadata[17:34,1] <- NNUH # Replace old names with new names
+
+view(metadata)
 #### Species Richness ####
 # Calculate species number 
 # Margin = 1, by row
@@ -35,8 +43,8 @@ shannon_diversity <- diversity(abundance_table,
 shannon_diversity <- as.data.frame(shannon_diversity)
 shannon_metadata <- cbind(metadata, shannon_diversity)
 
-wilcox.test(shannon_diversity ~ time_point, data = shannon_metadata)
-#write_csv(shannon_metadata, file = "Shannon_metadata_genus.csv")
+summary(aov(shannon_diversity ~ time_point, shannon_metadata))
+# p = 0.37
 
 # Simpsons index
 simpson_diversity <- diversity(abundance_table,
@@ -44,41 +52,36 @@ simpson_diversity <- diversity(abundance_table,
 simpson_diversity <- as.data.frame(simpson_diversity)
 simpson_metadata <- cbind(metadata, simpson_diversity)
 
-wilcox.test(simpson_diversity ~ time_point, data = simpson_metadata)
-#write_csv(simpson_metadata, file = "Simpson_metadata_genus.csv")
+summary(aov(simpson_diversity ~ time_point, simpson_metadata))
+# p = 0.26
 
 # Plot diversity indexes
 # Order the choronological order of time points
-shannon_metadata$Time_point <- factor(shannon_metadata$time_point, 
-                                      levels = c("Baseline", "post-surgery"))
-
+shannon_metadata$time_point <- factor(shannon_metadata$time_point, 
+                                      levels = c("baseline", "post-surgery",
+                                                 "6-months", "one-year"))
+simpson_metadata$time_point <- factor(simpson_metadata$time_point, 
+                                      levels = c("baseline", "post-surgery",
+                                                 "6-months", "one-year"))
 #Alpha diversity plot 
-ggplot(shannon_metadata, aes(x = time_point, y = shannon_diversity),
+ggplot(simpson_metadata, aes(x = time_point, y = simpson_diversity),
        fill = time_point, shape = time_point) +
   geom_boxplot(aes(fill = time_point, shape = time_point, colour = time_point)) + #, outlier.shape = NA) +
   geom_point(position = "identity", aes(fill = time_point, shape = time_point, colour = time_point), # change the shape 
              size = 2,
              stroke = .5) +
-  scale_shape_manual(values=c(21, 21, 21)) +
+  scale_shape_manual(values=c(21, 21, 21, 21)) +
   scale_color_manual(values=c("blue",
                               "red",
-                              "goldenrod")) +
-  scale_fill_manual(values=c("white", "white", "white")) + # inner colour can change
+                              "goldenrod",
+                              "darkgreen")) +
+  scale_fill_manual(values=c("white", "white", "white", "white")) + # inner colour can change
   #Set the axis labels and title
-  labs(title="Simpson Diversity filtered species"  ) +
+  labs(title="Simpson Diversity BEAM patients species", 
+       x = "Time point",
+       y = "Simpson Diversity") +
   theme(#Set the title font size
     plot.title = element_text(size=8),
-    #Set the legend title position
-    legend.position = "bottom",
-    #Set the legend title font size
-    legend.title = element_text(size=8),
-    #Define the size of the legend text and make it italic
-    legend.text = element_text(size=8,
-                               face = "italic"),
-    #Remove the grey background from the legend
-    legend.background = element_blank(),
-    #Remove the box from the legend
-    legend.key = element_blank(),
     #Remove the grey background
     panel.background = element_blank(),
     #Remove the plot border
@@ -88,9 +91,9 @@ ggplot(shannon_metadata, aes(x = time_point, y = shannon_diversity),
     #Remove the minor plot grid lines
     panel.grid.minor = element_blank(),
     #Change orientation of x axis labels
-    axis.text.x = element_text(angle=0,
-                               hjust=0.5,
-                               vjust=0, # "justifying" text
+    axis.text.x = element_text(angle=45,
+                               hjust=1,
+                               vjust=1, # "justifying" text
                                size=8),
     axis.title.x = element_text(size=8),
     #Define the axis title text size
@@ -107,7 +110,7 @@ ggplot(shannon_metadata, aes(x = time_point, y = shannon_diversity),
 #annotate("text", x = 1.5, y = 16, label = "p = 1", size = 2.5) +
 #annotate("segment", x = 1, xend = 2, y = 15, yend=15, lwd = 0.5)
 
-#ggsave("KELLY Simpson Diversity filtered baseline_EoT genus.png", width = 200, height = 200, units = c("mm"), dpi = 400)
+ggsave("BEAM Simpson diversity species by Timepoint.png", width = 200, height = 200, units = c("mm"), dpi = 400)
 
 # Beta diversity
 adonis2(abundance_table ~ time_point,
@@ -130,8 +133,8 @@ ggplot(data = plot.data, aes(x = NMDS1, y = NMDS2)) +
              size = 3) + 
   stat_ellipse(aes(colour = time_point)) +
     # scale_"" is used to design the plot
-  scale_fill_manual(values = c("white", "white", "white")) + 
-  scale_colour_manual(values = c("blue", "red", "darkgreen")) + 
+  scale_fill_manual(values = c("white", "white", "white", "white")) + 
+  scale_colour_manual(values = c("blue", "red", "goldenrod", "darkgreen")) + 
   scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)) +
   #Add label to points
   geom_text(label=(plot.data$PatientID), 
@@ -177,4 +180,4 @@ ggplot(data = plot.data, aes(x = NMDS1, y = NMDS2)) +
     #Set the aspect ratio of the plot
     aspect.ratio = 1)
 
-#ggsave("KELLY NMDS Baseline_EoT genus.png", width = 200, height = 200, units = c("mm"), dpi = 400)
+ggsave("BEAM NMDS plot species.png", width = 200, height = 200, units = c("mm"), dpi = 400)
