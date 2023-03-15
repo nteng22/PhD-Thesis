@@ -13,10 +13,24 @@ setwd("~/Dropbox/QIB/BEAM R Analysis/Shotgun data/")
 #install.packages("ComplexHeatmap")
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 
-normalised_data <- read_csv("BEAM_species_normalised.csv", col_names =  TRUE)
-  select(`Synechococcus sp. Minos11`:ncol(normalised_data))
+normalised_data <- read_csv("BEAM_genus_normalised.csv", col_names =  TRUE)
+data <- normalised_data %>%  
+  select(Cloacibacillus:ncol(normalised_data))
 metadata <- normalised_data %>%
   select(Sample)
+
+# Change the NNUH sample names
+NNUH <- metadata[17:34,1] # Subset, only select the NNUH samples
+NNUH$Sample <- paste('NNUH00', NNUH$Sample, sep = "")
+metadata[17:34,1] <- NNUH # Replace old names with new names
+
+metadata <- separate(metadata, Sample,
+                     sep = "(?<=[0-9])(?=[A-Z])",
+                     into = c("PatientID", "time_point"))
+metadata$time_point <- gsub("A", "baseline", metadata$time_point)
+metadata$time_point <- gsub("B", "post-surgery", metadata$time_point)
+metadata$time_point <- gsub("C", "6-months", metadata$time_point)
+metadata$time_point <- gsub("D", "one-year", metadata$time_point)
 
 # Make a dataframe "top" that contains the top 10 most abundant genera. You can alter these as you want.
 top <- data[,order(colSums(data),decreasing=TRUE)]
@@ -64,8 +78,9 @@ sample_data$sample_ID <- factor(sample_data$sample_ID,
 
 # Use melt to turn the data from wide format into long format. This puts all the species data into a single column.
 sample_data_long <- melt(sample_data, 
-                         id.vars = c("Sample"),
-                         variable.name = "species")
+                         id.vars = c("PatientID",
+                                     "time_point"),
+                         variable.name = "genus")
 sample_data_long
 
 # Melt "summarizes" each data point i.e. for sample ID P001D
@@ -74,40 +89,41 @@ sample_data_long
 taxa_list # This shows you what those top ones are.
 genusPalette <- c( Bacteroides = "cadetblue1",
                    Faecalibacterium = "red",
-                   Blautia = "purple",
-                   Phocaeicola = "blue",
+                   Phocaeicola = "purple",
+                   Blautia = "blue",
                    Coprococcus = "green3",
                    Alistipes = "yellow",
-                   Bifidobacterium = "red4",
-                   Akkermansia = "green",
-                   Collinsella = "orange",
-                   Escherichia = "pink",
+                   Anaerostipes = "red4",
+                   Bifidobacterium = "green",
+                   Roseburia = "orange",
+                   Mediterraneibacter = "pink",
                    
                    Others = "grey")
 
 speciesPalette <- c( Faecalibacterium.prausnitzii = "cadetblue1",
-                     Akkermansia.muciniphila = "red",
-                     Blautia.sp..SC05B48 = "purple",
-                     Phocaeicola.vulgatus = "blue",
-                     Collinsella.aerofaciens = "green3",
-                     Bacteroides.uniformis = "yellow",
-                     Escherichia.coli = "red4",
-                     Bacteroides.cellulosilyticus = "green",
-                     Anaerostipes.hadrus = "orange",
-                     Phocaeicola.dorei = "pink",
+                     Bacteroides.uniformis = "red",
+                     Anaerostipes.hadrus = "purple",
+                     Blautia.sp..SC05B48 = "blue",
+                     Phocaeicola.vulgatus = "green3",
+                     Phocaeicola.dorei = "yellow",
+                     Bacteroides.cellulosilyticus = "red4",
+                     Roseburia.intestinalis= "green",
+                     Escherichia.coli = "orange",
+                     X.Ruminococcus..torques= "pink",
                    
                    Others = "grey")
+
 # Use ggplot2 to make the stacked box plot.
 ggplot(sample_data_long,
-       aes(x = Sample,
+       aes(x = PatientID,
            y = value,
-           fill = species)) +
+           fill = genus)) +
   #Set the width of the bars in the plot
   geom_bar(stat = "identity",
            width = 0.7) +
-  #facet_grid(. ~ BrCa)+ # Choose to show per category of metadata
+  facet_grid(. ~ time_point)+ # Choose to show per category of metadata
   #Set the colors to use the speciesPalette already created
-  scale_fill_manual(values = speciesPalette) +
+  scale_fill_manual(values = genusPalette) +
   #Remove extra space at the top and bottom of the plot
   scale_y_continuous(expand = c(0, 0),
                      limits = c(0, 100.1)) +
@@ -155,4 +171,4 @@ ggplot(sample_data_long,
   )
 
 #Save as a pdf for size to go into Inkspace figure
-ggsave("BEAM Ten most abundant species stacked box plots.pdf", width = 150, height = 150, units = c("mm"), dpi = 300)
+ggsave("BEAM Ten most abundant Genus stacked box plots.pdf", width = 150, height = 150, units = c("mm"), dpi = 300)
