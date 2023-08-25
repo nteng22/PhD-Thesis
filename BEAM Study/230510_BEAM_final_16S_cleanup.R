@@ -191,6 +191,10 @@ metadata$BrCa[is.na(metadata$BrCa)] <- "Unclassified"
 metadata$chemotherapy[is.na(metadata$chemotherapy)] <- "Unclassified"
 metadata$age[is.na(metadata$age)] <- "Unclassified"
 
+metadata$radiotherapy
+metadata$radiotherapy[is.na(metadata$radiotherapy) == FALSE] <- "yes"
+metadata$radiotherapy[is.na(metadata$radiotherapy)] <- "no"
+
 # P002A is actually P001D and P001D is actually P002A. Remove the Ar and Dr
 metadata_finaldata <- final_data %>%
   select(sample_ID)
